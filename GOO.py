@@ -5,8 +5,12 @@ import functools
 import collections
 
 #the goos you want to compute, you can have multiple
-goos = [12,40]
+goos = [15]
+globalCycles = []
+msPerGoo = 5000
 
+#tests to ensure working, once these pass, we can time it and compare to java
+#TODO use unittest to implement a TDD approach
 #max order of symmetric group S12 is 60 using: [3, 4, 5]
 #max order of symmetric group S40 is 7140 using: [1, 2, 3, 4, 5, 7, 17]
 
@@ -17,53 +21,41 @@ goos = [12,40]
 
 def main(): 
     for goo in goos:
-        parts = GOO(goo)
-        #print("Max order of symmetric group S", goo, " is ", int(parts[0]), " using ", parts[1], sep ='')
+        parts = GOObrute(goo)
+        print("Max order of symmetric group S", goo, " is ", int(parts[0]), " using ", parts[1], sep ='')
 
 #driver code, copy this if you're stealing my code for your own application :P
 # pls credit me though <3
-def GOO(n):
+def GOObrute(n):
     max = 0
     using = []
     globalCycles = []
     productOfCycleLengths = []
 
-    #add to global cycles using procedural algorithm if generated sorted cycle is not in globalCycles
+    ones = []
+    for i in range(0, n, 1):
+        ones.append(1)
 
-    for i in range(1, n, 1):
-        currentCycle = [i]
-        for i in range(0, n - i, 1):
-            currentCycle.append(1)
+    ones.sort()
+    globalCycles.append(ones)
 
-        globalCycles.append(currentCycle)
-        print("here")
+    nlist = [n]
+    globalCycles.append(nlist)
 
-        if len(currentCycle) > 3:
-            firstCopy = currentCycle.copy()
-            sum = firstCopy[0] + firstCopy[1]
-            firstCopy[0] = sum
-            del firstCopy[1]
-            globalCycles.append(firstCopy)
+    for i in range(n - 1, 0, -1):
+        cycle = [i]
 
-            lastCopy = currentCycle.copy()
-            sum = lastCopy[-1] + lastCopy[-2]
-            lastCopy[-1] = sum
-            del lastCopy[-2]
-            globalCycles.append(lastCopy)
+        for j in range(0, n - i, 1):
+            cycle.append(1)
 
-            middleCopy = currentCycle.copy()
-            sum = middleCopy[math.floor(len(currentCycle) / 2.0)] + middleCopy[math.floor(len(currentCycle) / 2.0) + 1]
-            middleCopy[math.floor(len(currentCycle) / 2.0)] = sum
-            del middleCopy[math.floor(len(currentCycle) / 2.0) + 1]
-            globalCycles.append(middleCopy)
-            
-            return 0
-        elif len(currentCycle == 2):
-            sum = currentCycle[0] + currentCycle[1]
-            currentCycle[0] = sum
-            del currentCycle[1]
-            globalCycles.append(currentCycle)
-    print(len(globalCycles))
+        cycle.sort()
+        globalCycles.append(cycle)
+    
+    start = time.time() * 1000
+
+    while (time.time() * 1000 < start + msPerGoo):
+        cycleGenerator(globalCycles[rand(len(globalCycles) - 1)])
+
 
     for cycle in globalCycles:
         productOfCycleLengths.append(lcmArray(cycle))
@@ -74,8 +66,6 @@ def GOO(n):
             using = globalCycles[i]
 
     return [max, using]
-
-#no convert intergers here since we're using python :D
 
 #outer lcm method
 def lcmArray(array):
@@ -102,9 +92,25 @@ def rand(max):
     #can return 0,1,2,...,max - 1, max
     return random.randint(0, max)
 
+#TODO make generator
 
 @functools.lru_cache
 def factorial(n):
     return 1 if n == 0 else n * factorial(n - 1)
+
+def cycleGenerator(cycle):
+    if len(cycle) < 3:
+        return
+    newCycle = cycle.copy()
+    r1 = rand(len(cycle) - 1)
+    r2 = rand(len(cycle) - 1)
+    sum = newCycle[r1] + newCycle[r2]
+    newCycle[r1] = sum
+    del newCycle[r2]
+    newCycle.sort()
+    if any(list != cycle for list in globalCycles):
+        #ERROR not getting added
+        print("add") 
+        globalCycles.append(cycle)
 
 main()
