@@ -6,7 +6,7 @@ import collections
 import numpy
 
 #the goos you want to compute, you can have multiple
-goos = [15]
+goos = [30]
 msPerGoo = 15000
 
 #tests to ensure working, once these pass, we can time it and compare to java
@@ -20,10 +20,10 @@ msPerGoo = 15000
 #TODO: implement a non-brute force procedural algorithm
 
 def main(): 
-    print(landau(15))
     for goo in goos:
         parts = GOObrute(goo)
         print("Max order of symmetric group S", goo, " is ", int(parts[0]), " using ", parts[1], sep ='')
+    print(landau(30))
 
 #driver code, copy this if you're stealing my code for your own application :P
 # pls credit me though <3
