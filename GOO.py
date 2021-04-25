@@ -3,9 +3,10 @@ import random
 import time
 import functools
 import collections
+import numpy
 
 #the goos you want to compute, you can have multiple
-goos = [30]
+goos = [15]
 msPerGoo = 15000
 
 #tests to ensure working, once these pass, we can time it and compare to java
@@ -19,9 +20,10 @@ msPerGoo = 15000
 #TODO: implement a non-brute force procedural algorithm
 
 def main(): 
+    print(landau(15))
     for goo in goos:
-         parts = GOObrute(goo)
-         print("Max order of symmetric group S", goo, " is ", int(parts[0]), " using ", parts[1], sep ='')
+        parts = GOObrute(goo)
+        print("Max order of symmetric group S", goo, " is ", int(parts[0]), " using ", parts[1], sep ='')
 
 #driver code, copy this if you're stealing my code for your own application :P
 # pls credit me though <3
@@ -66,6 +68,13 @@ def GOObrute(n):
             using = globalCycles[i]
 
     return [max, using]
+
+landau = lambda n, d = 1:max([landau(m, lcm(d, n - m)) for m in range(n)] + [d])
+
+def GOOopt(n):
+    return [n, [n]]
+    #so we can start with 1, 2, 3,... floor n/2 for an array
+    #then generate relatively prime numbers to n and the first number (all other elements in array)
 
 #outer lcm method - returns the lcm of all elements in an array
 #ex: [2,13] returns 26
