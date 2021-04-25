@@ -56,7 +56,6 @@ def GOObrute(n):
     while (time.time() * 1000 < start + msPerGoo):
         cycleGenerator(globalCycles[rand(len(globalCycles) - 1)])
 
-
     for cycle in globalCycles:
         productOfCycleLengths.append(lcmArray(cycle))
 
@@ -108,9 +107,7 @@ def cycleGenerator(cycle):
     newCycle[r1] = sum
     del newCycle[r2]
     newCycle.sort()
-    if any(list != cycle for list in globalCycles):
-        #ERROR not getting added
-        print("add") 
-        globalCycles.append(cycle)
+    if newCycle not in globalCycles:
+        globalCycles.append(newCycle)
 
 main()
