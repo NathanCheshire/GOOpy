@@ -5,9 +5,8 @@ import functools
 import collections
 
 #the goos you want to compute, you can have multiple
-goos = [15]
-globalCycles = []
-msPerGoo = 5000
+goos = [30]
+msPerGoo = 15000
 
 #tests to ensure working, once these pass, we can time it and compare to java
 #TODO use unittest to implement a TDD approach
@@ -21,16 +20,16 @@ msPerGoo = 5000
 
 def main(): 
     for goo in goos:
-        parts = GOObrute(goo)
-        print("Max order of symmetric group S", goo, " is ", int(parts[0]), " using ", parts[1], sep ='')
+         parts = GOObrute(goo)
+         print("Max order of symmetric group S", goo, " is ", int(parts[0]), " using ", parts[1], sep ='')
 
 #driver code, copy this if you're stealing my code for your own application :P
 # pls credit me though <3
 def GOObrute(n):
     max = 0
     using = []
-    globalCycles = []
     productOfCycleLengths = []
+    globalCycles = []
 
     ones = []
     for i in range(0, n, 1):
@@ -54,19 +53,22 @@ def GOObrute(n):
     start = time.time() * 1000
 
     while (time.time() * 1000 < start + msPerGoo):
-        cycleGenerator(globalCycles[rand(len(globalCycles) - 1)])
+        cycleGenerator(globalCycles[rand(len(globalCycles) - 1)], globalCycles)
 
     for cycle in globalCycles:
-        productOfCycleLengths.append(lcmArray(cycle))
+        lcm = lcmArray(cycle)
+        productOfCycleLengths.append(lcm)
 
     for i in range (0, len(productOfCycleLengths),1):
-        if productOfCycleLengths[i] > max:
-            max = productOfCycleLengths[i]
+        lcm = productOfCycleLengths[i];
+        if lcm > max:
+            max = lcm
             using = globalCycles[i]
 
     return [max, using]
 
-#outer lcm method
+#outer lcm method - returns the lcm of all elements in an array
+#ex: [2,13] returns 26
 def lcmArray(array):
     return lcmOfArray(array, 0, len(array))
 
@@ -97,7 +99,7 @@ def rand(max):
 def factorial(n):
     return 1 if n == 0 else n * factorial(n - 1)
 
-def cycleGenerator(cycle):
+def cycleGenerator(cycle, list):
     if len(cycle) < 3:
         return
     newCycle = cycle.copy()
@@ -107,7 +109,7 @@ def cycleGenerator(cycle):
     newCycle[r1] = sum
     del newCycle[r2]
     newCycle.sort()
-    if newCycle not in globalCycles:
-        globalCycles.append(newCycle)
+    if newCycle not in list:
+        list.append(newCycle)
 
 main()
