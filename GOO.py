@@ -3,10 +3,6 @@ import random
 import time
 import functools
 
-#the goos you want to compute, you can have multiple
-goos = [30]
-bruteGooTimeout = 30000
-
 #TODO add tests to ensure working, once these pass, we can time it and compare to java and Go versions
 #TODO use unittest to implement a TDD approach
 
@@ -21,15 +17,17 @@ bruteGooTimeout = 30000
 #TODO: implement a non-brute force procedural algorithm
 
 def main(): 
+    goos = [30]
+
     #calculate multiple goos with a single program call
     for goo in goos:
-        parts = GOObrute(goo)
+        parts = GOObruteRandom(goo)
         print("Max order of symmetric group S", goo, " is ", int(parts[0]), " using ", parts[1], sep ='')
 
 
 #driver code, copy this if you're stealing my code for your own application :P
 # pls credit me though <3
-def GOObrute(n):
+def GOObruteRandom(n, timeout = 5000):
     #current maximum degree found and the cycles used to achieve it
     max = 0
     using = []
@@ -72,7 +70,7 @@ def GOObrute(n):
     start = time.time() * 1000
 
     #if we can keep generating then do so
-    while (time.time() * 1000 < start + bruteGooTimeout):
+    while (time.time() * 1000 < start + timeout):
         cycleGenerator(globalCycles[rand(len(globalCycles) - 1)])
 
     #calculate the cycle lengths
@@ -92,10 +90,46 @@ def GOObrute(n):
 
 #finds the GOO of n using an optimal algorithm and not a brute force algorithm
 #todo calculate big O runtimes for each method
-def GOOopt(n):
-    return [n, [n]]
+def GOOoptimal(n):
+    pass
     #so we can start with 1, 2, 3,... floor n/2 for an array
     #then generate relatively prime numbers to n and the first number (all other elements in array)
+
+def GOObruteSuccessive(n):
+    pass
+    #our cycles list to hold all possible cycles
+    cycles = []
+
+    #all possible sizes of lists are 1 to n
+    #if n = 5, singleton = {5} and list of len 5 = {1,1,1,1,1} the identity one list
+    for listSize in range(1, n + 1):
+        print('On lists of size: ',str(listSize),'-------------------')
+
+        #todo make a list of all 1's here
+        ones = []
+        for i in range(0, listSize):
+            ones.append(1)
+        print(ones)
+
+        for maxListIndex in range(1, listSize + 1):
+            print('On max index: ' + str(maxListIndex),'-------------------')
+            #step down from maxIndex all the way to index 0 (so first element)
+            for listIndex in range(maxListIndex, 0, -1):
+                for indexValue in range(listSize,0,-1):
+                    #print('set index ',listIndex - 1, f' to {indexValue}')
+                    sublist = ones.copy()
+                    sublist[listIndex - 1] = indexValue
+                    sublist.sort()
+
+                    sum = 0
+                    for index in range(0,len(sublist)):
+                        sum += sublist[index]
+
+                    if sublist not in cycles and sum == n:
+                        cycles.append(sublist)
+
+    print('Found: ', len(cycles), ' cycles')
+    print(cycles)
 
 #returns the lcm of an array
 #ex: [2,13] returns 26
@@ -137,7 +171,7 @@ def cycleGenerator(cycle):
     #make a copy of the list
     newCycle = cycle.copy()
 
-    #pick two random points in teh list
+    #pick two random points in the list
     r1 = rand(len(cycle) - 1)
     r2 = rand(len(cycle) - 1)
 
@@ -158,4 +192,4 @@ def cycleGenerator(cycle):
         globalCycles.append(newCycle)
 
 if __name__ == '__main__':
-    main()
+    GOObruteSuccessive(5)
